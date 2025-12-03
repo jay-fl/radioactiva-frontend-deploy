@@ -29,6 +29,37 @@ export const userSchema = z.object({
   role: z.enum(['admin', 'user']) 
 })
 
+export const RegisterSchema = z.object({
+    name: z.string().min(1, { message: "El nombre es obligatorio" }),
+    email: z.string()
+      .min(1, { message: "El email es obligatorio" })
+      .email({ message: "El email no es válido" }),
+    role: z.enum(["admin", "user"]).optional(),
+    password: z.string()
+      .min(8, { message: "La contraseña debe tener al menos 8 caracteres." })
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]).*$/,
+        {
+          message:
+            "La contraseña debe contener al menos una minúscula, una mayúscula, un número y un carácter especial.",
+        }
+      ),
+    password_confirmation: z.string().min(1, {
+      message: "La confirmación de la contraseña es obligatoria",
+    }),
+  })
+  .refine((data) => data.password === data.password_confirmation, {
+    message: "Las contraseñas no coinciden",
+    path: ["password_confirmation"], 
+  });
+
+  export const editUserAdminFormSchema = z.object({
+    name: z.string().min(1, { message: "El nombre es obligatorio" }),
+    email: z.string()
+      .min(1, { message: "El email es obligatorio" })
+      .email({ message: "El email no es válido" })
+  })
+
 export const userResponseSchema = z.array(userSchema)
 
 export const ProgramSchema = z.object({
@@ -77,7 +108,7 @@ export const ErrorResponseSchema = z.object({
 
 export const nestHttpErrorSchema = z.object({
   statusCode: z.number(),
-  message: z.array(z.string()),
+  message: z.union([z.string(), z.array(z.string())]),
   error: z.string()
 })
 
@@ -115,3 +146,20 @@ export const NewsResponseSchema = z.object({
    news: z.array(NewsSchema),
    total: z.number()
 })
+
+export const UpdatePasswordSchema = z.object({
+        current_password: z.string().min(1, {message: 'La contraseña no puede ir vacia'}),
+        password: z.string()
+      .min(8, { message: "La contraseña debe tener al menos 8 caracteres." })
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~\\/-]).*$/,
+        {
+          message:
+            "La contraseña debe contener al menos una minúscula, una mayúscula, un número y un carácter especial.",
+        }
+      ),
+        password_confirmation: z.string()
+  }).refine((data) => data.password === data.password_confirmation, {
+      message: "Las contraseñas no son iguales",
+      path: ["password_confirmation"]
+  });

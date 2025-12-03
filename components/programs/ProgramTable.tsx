@@ -71,9 +71,9 @@ export default function ProgramTable({programs}: {programs: Program[]}) {
                           </td>
                           <td className="relative py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0 ">
                             <div className='flex gap-5 justify-end items-center'>
-                                <DeleteProgramForm 
+                                {program.user.role !== 'admin' && <DeleteProgramForm 
                                   programId={program.id}
-                                />
+                                />}
                             </div>
                           </td>
                         </tr>

@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 //import { jwtDecode } from "jwt-decode";
-import { ErrorResponseSchema, LoginSchema } from "@/src/schemas";
+import { LoginSchema, nestHttpErrorSchema } from "@/src/schemas";
 
 type ActionStateType = {
   errors: string[];
@@ -40,11 +40,15 @@ export async function login(prevState: ActionStateType, formData: FormData) {
   const json = await req.json();
   
   if(!req.ok) {
-    const { message } = ErrorResponseSchema.parse(json);
-    return {
-      errors: [message]
-    }
+  const errorData = nestHttpErrorSchema.parse(json);
+  const errors = Array.isArray(errorData.message) 
+    ? errorData.message 
+    : [errorData.message];
+  
+  return {
+    errors
   }
+}
   
 
   // const { role } = jwtDecode<{ role: string }>(json.token);
@@ -59,7 +63,10 @@ export async function login(prevState: ActionStateType, formData: FormData) {
   //  (await cookies()).set("user_role", role, { sameSite: "lax" });
   //const success = SuccessSchema.safeParse(json);
 
-  redirect("/admin");
+  return {
+    errors: [],
+    success: true
+  }
   
 }
 

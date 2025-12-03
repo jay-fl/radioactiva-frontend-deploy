@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import DeleteSongForm from './DeleteSongForm'
+import { RiEditBoxFill } from 'react-icons/ri'
 
 export default function SongTable({songs} : {songs: Song[]}) {
   return (
@@ -57,8 +58,9 @@ export default function SongTable({songs} : {songs: Song[]}) {
                             <Link
                                 className="text-indigo-600 hover:text-indigo-800"
                                 href={`/admin/songs/${song.id}/edit`}
+                                title='Editar'
                             >
-                                Editar <span className="sr-only">, {song.track}</span>
+                                <RiEditBoxFill size={18}/>
                             </Link>
                             <DeleteSongForm songId={song.id} />
                         </div>

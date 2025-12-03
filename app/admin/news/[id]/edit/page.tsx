@@ -54,7 +54,7 @@ export default async function EditNewsPage({ params } : { params: { id: string }
           <h1 className='font-black text-4xl text-[#17275b] my-5'>
             Editar Noticia: {news.headline}
           </h1>
-          <p className="text-xl font-bold">Llena el formulario y crea una nueva {''}
+          <p className="text-xl font-bold">Llena el formulario y actualiza la  {''}
             <span className="text-[#248bcf]">noticia</span>
           </p>
         </div>

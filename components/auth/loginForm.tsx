@@ -1,12 +1,15 @@
 'use client'
 
 import { login } from '@/app/actions/login-action'
+import { useRouter } from 'next/navigation'
 import { useActionState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 
 export default function LoginForm() {
+	const router = useRouter()
 	const [state, dispatch] = useActionState(login, {
 		errors: [],
+		success: false
 	})
 
     useEffect(() => {
@@ -15,7 +18,11 @@ export default function LoginForm() {
           toast.error(error)
         });
       }
-    }, [state])
+	  if(state.success){
+		toast.success('Login Exitoso')
+		router.push('/admin')
+	  }
+    }, [state, router])
     
 
 	return (
@@ -29,7 +36,10 @@ export default function LoginForm() {
                 
                 {/* {state.success && <SuccessMessage>{state.success}</SuccessMessage>} */}
 				<div className='flex flex-col gap-2'>
-					<label className='font-bold text-2xl'>Email</label>
+					<label 
+					className='font-bold text-2xl'
+					htmlFor='email'
+					>Email</label>
 
 					<input
 						id='email'
@@ -41,7 +51,10 @@ export default function LoginForm() {
 				</div>
 
 				<div className='flex flex-col gap-2'>
-					<label className='font-bold text-2xl'>Password</label>
+					<label 
+					className='font-bold text-2xl'
+					htmlFor='password'
+					>Password</label>
 
 					<input
 						type='password'

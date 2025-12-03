@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import DeleteNewsForm from "./DeleteNewsForm"
 import { getImagePath } from "@/src/utils"
+import { RiEditBoxFill } from "react-icons/ri"
 
 export default function NewsTable({news}: {news: News[]}) {
   return (
@@ -56,8 +57,9 @@ export default function NewsTable({news}: {news: News[]}) {
                             <Link
                                 className="text-indigo-600 hover:text-indigo-800"
                                 href={`/admin/news/${report.id}/edit`}
+                                title='Editar'
                             >
-                                Editar <span className="sr-only">, {report.headline}</span>
+                                <RiEditBoxFill size={18}/>
                             </Link>
                             <DeleteNewsForm
                               newsId={report.id}

@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Radio Activa - Panel de Administración",
@@ -7,9 +8,5 @@ export const metadata: Metadata = {
 
 export default async function AdminPage() {
 
-  
-
-  return (
-    <div>AdminPage</div>
-  )
+  redirect("/admin/profile/settings");
 }

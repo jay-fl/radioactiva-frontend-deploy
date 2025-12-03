@@ -1,34 +1,12 @@
-'use client'
+import { User } from '@/src/schemas'
+import React from 'react'
 
-import { createUser } from "@/app/actions/create-user-action"
-import { useRouter } from "next/navigation"
-import { useActionState, useEffect } from "react"
-import { toast } from "react-toastify"
-
-export default function CreateUserForm() {
-
-    const router = useRouter()
-    
-        const [state, dispatch] = useActionState(createUser, {
-            errors: [],
-            success: '',
-        })
-
-        useEffect(() => {
-                if (state.errors) {
-                    state.errors.forEach((error) => toast.error(error))
-                }
-                if (state.success) {
-                    toast.success(state.success)
-                    router.push('/admin/users')
-                }
-            }, [state, router])
-
+export default function EditUserForm({user} : {user: User}) {
   return (
     <form
                 className='mt-10 space-y-3'
                 noValidate
-                action={dispatch}
+                action={() => {}}
             >
                 <div className='space-y-3'>
                     <label
@@ -43,6 +21,7 @@ export default function CreateUserForm() {
                         type='text'
                         placeholder='Nombre del usuario'
                         name='name'
+                        defaultValue={user.name}
                     />
                 </div>
                 <div className='space-y-3'>
@@ -58,6 +37,7 @@ export default function CreateUserForm() {
                         type='text'
                         placeholder='Email del usuario'
                         name='email'
+                        defaultValue={user.email}
                     />
                 </div>
                  <div className='space-y-3'>
@@ -71,6 +51,7 @@ export default function CreateUserForm() {
                     id='role'
                     className='w-full p-3 border border-gray-100 bg-slate-100'
                     name='role'
+                    defaultValue={user.role}
                 >
                     <option defaultValue='' disabled>-- Selecciona un rol --</option>
                     <option value='user'>Usuario</option>
@@ -110,7 +91,7 @@ export default function CreateUserForm() {
                 <input
                     type='submit'
                     className='bg-[#248bcf] w-full p-3 text-white uppercase font-bold hover:bg-[#254584] cursor-pointer transition-colors'
-                    value='Crear Usuario'
+                    value='Crear Canción'
                 />
             </form>
   )

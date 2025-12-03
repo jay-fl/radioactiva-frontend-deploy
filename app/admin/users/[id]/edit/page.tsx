@@ -1,14 +1,13 @@
-import EditSongsForm from '@/components/songs/EditSongsForm'
-import { SongSchema } from '@/src/schemas';
-import { Metadata } from 'next';
-import { cookies } from 'next/headers';
-import Link from 'next/link'
-import { notFound } from 'next/navigation';
-import React from 'react'
+import EditUserAdminForm from "@/components/users/EditUserAdminForm";
+import { userSchema } from "@/src/schemas";
+import { Metadata } from "next";
+import { cookies } from "next/headers";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
-const getSongs = async (id: string) => {
+const getUsers = async (id: string) => {
   const token = (await cookies()).get("RADIOACTIVA_TOKEN")?.value;
-  const url = `${process.env.API_URL}/songs/${id}`;
+  const url = `${process.env.API_URL}/users/${id}`;
   const req = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -20,43 +19,46 @@ const getSongs = async (id: string) => {
     notFound()
   }
 
-  const songs = SongSchema.parse(json);
-  return songs;
+  const user = userSchema.parse(json);
+  return user;
 }
 
 export async function generateMetadata({ params } : { params: { id: string } }) : Promise<Metadata>{
   const { id } = await params;
-  const songs = await getSongs(id)
+  const user = await getUsers(id)
   return {
-    title: `Radio Activa - ${songs.track}`,
-    description: `Radio Activa - ${songs.track}`
+    title: `Radio Activa - ${user.name}`,
+    description: `Radio Activa - ${user.name}`
   }
 }
 
-export default async function EditSongsPage({ params } : { params: { id: string } }) {
+export default async function EditUsersPage({ params } : { params: { id: string } }) {
+
     const { id } = await params
-  
-    const songs = await getSongs(id)
+    const user = await getUsers(id)
+
   return (
     <>
         <div className='flex flex-col-reverse md:flex-row md:justify-between items-center'>
         <div className='w-full md:w-auto'>
           <h1 className='font-black text-4xl text-[#17275b] my-5'>
-            Editar Canción: {songs.track}
+            Editar Usuario: {user.name}
           </h1>
-          <p className="text-xl font-bold">Llena el formulario y actualiza la  {''}
-            <span className="text-[#248bcf]">canción</span>
+          <p className="text-xl font-bold">Llena el formulario y actualiza el  {''}
+            <span className="text-[#248bcf]">usuario</span>
           </p>
         </div>
         <Link
-          href={'/admin/songs'}
+          href={'/admin/users'}
           className='bg-[#248bcf] p-2 rounded-lg text-white font-bold w-full md:w-auto text-center'
         >
           Volver
         </Link>
       </div>
       <div className='p-10 mt-10  shadow-lg border '>
-        <EditSongsForm songs={songs} />
+        <EditUserAdminForm 
+          user={user}
+        />
       </div>
     </>
   )

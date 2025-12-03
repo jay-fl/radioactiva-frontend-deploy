@@ -41,14 +41,18 @@ export async function createProgram(prevState: ActionStateType, formData: FormDa
             body: JSON.stringify(programs.data)
         })
         const json = await req.json()
-console.log(json)
+
+
         if (!req.ok) {
-            const errors = nestHttpErrorSchema.parse(json)
-            return {
-                errors: errors.message,
-                success: ''
-            }
+        const error = nestHttpErrorSchema.parse(json);
+        const errorMessages = Array.isArray(error.message)
+            ? error.message
+            : [error.message];
+        return {
+            errors: errorMessages,
+            success: ''
         }
+    }
 
         return {
             errors:[],
