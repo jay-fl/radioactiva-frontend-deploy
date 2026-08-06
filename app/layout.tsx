@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit } from 'next/font/google'
 import "./globals.css";
+import MainNav from "@/components/ui/MainNav";
 //import MainNav from "@/components/ui/MainNav";
 
 const outfit = Outfit({subsets: ['latin']})
@@ -20,7 +21,7 @@ export default function RootLayout({
       <body
         className={`${outfit.className} `}
       >
-        {/* <MainNav /> */}
+        <MainNav /> 
         {children}
       </body>
     </html>

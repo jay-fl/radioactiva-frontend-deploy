@@ -37,10 +37,13 @@ export async function createNews(prevState: ActionStateType, formData: FormData)
     })
     const json = await req.json()
 
-    if(!req.ok) {
-        const  error  = nestHttpErrorSchema.parse(json)
+    if (!req.ok) {
+        const error = nestHttpErrorSchema.parse(json);
+        const errorMessages = Array.isArray(error.message)
+            ? error.message
+            : [error.message];
         return {
-            errors: error.message,
+            errors: errorMessages,
             success: ''
         }
     }

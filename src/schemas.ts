@@ -88,6 +88,17 @@ export const ProgramFormSchema = z.object({
     image: z.string({ message: "La imagen es obligatoria" }),
     userId: z.coerce.number({message: 'El usuario es obligatorio'}),
 })
+
+export const UpdateProgramFormSchema = z.object({
+    name: z.string().min(1, { message: "El nombre del programa es obligatorio" }),
+    startTime: z.string().min(1, { message: "La hora de inicio es obligatoria" }),
+    endTime: z.string().min(1, { message: "La hora de fin es obligatoria" }),
+    announcer: z.string().min(1, { message: "El nombre del locutor es obligatorio" }),
+    alternativeST: z.string().nullable(),
+    alternativeET: z.string().nullable(),
+    image: z.string({ message: "La imagen es obligatoria" })
+})
+
 export const LoginSchema = z.object({
     email: z.string()
             .min(1, {message: "El email es obligatorio"})

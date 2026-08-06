@@ -1,38 +1,43 @@
 'use server'
 
-import { nestHttpErrorSchema, News, NewsFormSchema, SuccessSchema } from "@/src/schemas";
+import { nestHttpErrorSchema, SuccessSchema, UpdateProgramFormSchema } from "@/src/schemas";
 import { cookies } from "next/headers";
+
+
 
 type ActionStateType = {
     errors: string[];
     success: string
 }
 
-export async function editNews(newsId: News['id'], prevState: ActionStateType, formData: FormData) {
-   
-    const news = NewsFormSchema.safeParse({
-        headline: formData.get('headline'),
-        story: formData.get('story'),
-        programId: formData.get('programId'),
+export async function editCurrentProgram(prevState: ActionStateType, formData: FormData) {
+
+    const program = UpdateProgramFormSchema.safeParse({
+        name: formData.get('name'),
+        startTime: formData.get('startTime'),
+        endTime: formData.get('endTime'),
+        announcer: formData.get('announcer'),
+        alternativeST: formData.get('alternativeST'),
+        alternativeET: formData.get('alternativeET'),
         image: formData.get('image')
     })
 
-    if(!news.success){
+    if (!program.success) {
         return {
-            errors: news.error.errors.map(error => error.message),
+            errors: program.error.errors.map(error => error.message),
             success: ''
         }
     }
 
     const token = (await cookies()).get("RADIOACTIVA_TOKEN")?.value;
-    const url = `${process.env.API_URL}/news/${newsId}`
+    const url = `${process.env.API_URL}/programs/update-program`
     const req = await fetch(url, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(news.data)
+        body: JSON.stringify(program.data)
     })
     const json = await req.json()
 
@@ -49,7 +54,6 @@ export async function editNews(newsId: News['id'], prevState: ActionStateType, f
             success: ''
         }
     }
-    
     const success = SuccessSchema.parse(json)
     return {
         errors: [],

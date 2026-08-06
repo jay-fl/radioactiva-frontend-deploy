@@ -74,7 +74,7 @@ export default function CreateProgramsForm({users}: {users:User[]}) {
                         name='name'
                     />
                 </div>
-                <div className='space-y-3 flex gap-3'>
+                <div className='flex gap-3'>
                     <div className="flex flex-col flex-1">
                         <label
                         htmlFor='startTime'
@@ -106,7 +106,7 @@ export default function CreateProgramsForm({users}: {users:User[]}) {
                     />
                     </div>
                 </div>
-                <div className='space-y-3 flex gap-3'>
+                <div className=' flex gap-3'>
                     <div className="flex flex-col flex-1">
                         <label
                         htmlFor='alternativeST'

@@ -9,7 +9,7 @@ type ActionStateType = {
 }
 
 export async function createProgram(prevState: ActionStateType, formData: FormData) {
-    
+
     const programs = ProgramFormSchema.safeParse({
         name: formData.get('name'),
         startTime: formData.get('startTime'),
@@ -22,28 +22,28 @@ export async function createProgram(prevState: ActionStateType, formData: FormDa
     })
 
 
-    if (!programs.success){
+    if (!programs.success) {
         return {
             errors: programs.error.errors.map(error => error.message),
             success: ''
         }
     }
-    
+
     const token = (await cookies()).get('RADIOACTIVA_TOKEN')?.value;
-    
-        const url = `${process.env.API_URL}/programs`
-        const req = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(programs.data)
-        })
-        const json = await req.json()
+
+    const url = `${process.env.API_URL}/programs`
+    const req = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(programs.data)
+    })
+    const json = await req.json()
 
 
-        if (!req.ok) {
+    if (!req.ok) {
         const error = nestHttpErrorSchema.parse(json);
         const errorMessages = Array.isArray(error.message)
             ? error.message
@@ -54,8 +54,8 @@ export async function createProgram(prevState: ActionStateType, formData: FormDa
         }
     }
 
-        return {
-            errors:[],
-            success: 'Programa creado correctamente'
-        }
+    return {
+        errors: [],
+        success: 'Programa creado correctamente'
+    }
 }

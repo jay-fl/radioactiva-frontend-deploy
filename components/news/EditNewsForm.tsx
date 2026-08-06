@@ -9,11 +9,15 @@ import { useParams, useRouter } from "next/navigation"
 import { useActionState, useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { toast } from "react-toastify"
+import dynamic from 'next/dynamic'
 
-
+// Importar TipTap dinámicamente
+const EditorTipTap = dynamic(() => import('@/components/news/EditorTipTap'), {
+  ssr: false,
+  loading: () => <div className="h-[200px] bg-gray-100 animate-pulse rounded"></div>
+})
 
 export default function EditNewsForm({ news, programas } : {news: News, programas: Program[]}) {
-
   const router = useRouter()
   const { id } = useParams<{id: string}>()
   
@@ -25,8 +29,8 @@ export default function EditNewsForm({ news, programas } : {news: News, programa
 
   useEffect(() => {
     if(state.errors){
-            state.errors.forEach(error => toast.error(error))
-          }
+      state.errors.forEach(error => toast.error(error))
+    }
     if(state.success){
       toast.success(state.success)
       router.push('/admin/news')
@@ -34,31 +38,30 @@ export default function EditNewsForm({ news, programas } : {news: News, programa
   }, [state, router])
 
   const [image, setImage] = useState('')
-  
-    const onDrop = useCallback(async (files : File[]) => {
-      const formData = new FormData()
-      files.forEach(file => {
-        formData.append('file', file)
-      })
-      const image = await uploadImage(formData)
-      setImage(image)
-  
-    }, [])
-  
-    const {
-      getRootProps,
-      getInputProps,
-      isDragActive,
-      isDragAccept,
-      isDragReject,
-    } = useDropzone({
-      accept: {
-        'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
-      },
-      onDrop,
-      maxFiles: 1
+  const [story, setStory] = useState(news.story || '')
+
+  const onDrop = useCallback(async (files : File[]) => {
+    const formData = new FormData()
+    files.forEach(file => {
+      formData.append('file', file)
     })
-  
+    const image = await uploadImage(formData)
+    setImage(image)
+  }, [])
+
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragAccept,
+    isDragReject,
+  } = useDropzone({
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
+    },
+    onDrop,
+    maxFiles: 1
+  })
 
   return (
     <form
@@ -79,94 +82,100 @@ export default function EditNewsForm({ news, programas } : {news: News, programa
               defaultValue={news.headline}
           />
       </div>
+      
+      {/* REEMPLAZAR EL TEXTAREA POR EDITOR TIPTAP */}
       <div className="space-y-3">
           <label htmlFor="story" className="text-sm uppercase font-bold">
               Historia
           </label>
+          <EditorTipTap
+            value={story}
+            onChange={setStory}
+            name="story"
+            defaultValue={news.story}
+          />
+          {/* Mantener textarea oculto para validaciones */}
           <textarea
-              id="story"
-              className="w-full p-3  border border-gray-100 bg-slate-100"
-              placeholder="Escribe la historia de la noticia"
-              name="story"
-              defaultValue={news.story}
+            id="story"
+            className="hidden"
+            name="story"
+            value={story}
+            readOnly
           />
       </div>
-        <div className="space-y-3">
-            <label htmlFor="programId" className="text-sm uppercase font-bold">
-                Programa
-            </label>
-            <select
-                id="programId"
-                name="programId"
-                className="w-full p-3  border border-gray-100 bg-slate-100"
-                defaultValue={news.program.id.toString()}
-            >
-                <option defaultValue="">-- Selecciona un programa --</option>
-                {programas.map(programa => (
-                    <option key={programa.id} value={programa.id}>
-                        {programa.name}
-                    </option>
-                ))}
-            </select>
-        </div>
 
-        <div className='space-y-1'>
-				<label className='block text-sm font-medium leading-6 text-gray-900'>
-					Imagen Producto
-				</label>
-				<div
-					{...getRootProps({
-						className: `
+      <div className="space-y-3">
+          <label htmlFor="programId" className="text-sm uppercase font-bold">
+              Programa
+          </label>
+          <select
+              id="programId"
+              name="programId"
+              className="w-full p-3  border border-gray-100 bg-slate-100"
+              defaultValue={news.program.id.toString()}
+          >
+              <option value="">-- Selecciona un programa --</option>
+              {programas.map(programa => (
+                  <option key={programa.id} value={programa.id}>
+                      {programa.name}
+                  </option>
+              ))}
+          </select>
+      </div>
+
+      <div className='space-y-1'>
+        <label className='block text-sm font-medium leading-6 text-gray-900'>
+          Imagen Noticia
+        </label>
+        <div
+          {...getRootProps({
+            className: `
             py-20 border-2 border-dashed  text-center 
-            ${
-							isDragActive
-								? 'border-gray-900 text-gray-900 bg-gray-200 '
-								: 'border-gray-400 text-gray-400 bg-white'
-						} 
+            ${isDragActive ? 'border-gray-900 text-gray-900 bg-gray-200 ' : 'border-gray-400 text-gray-400 bg-white'} 
             ${isDragReject ? 'border-none bg-white' : 'cursor-not-allowed'}
-        `,
-					})}
-				>
-					<input {...getInputProps()} />
-					{isDragAccept && <p>Suelta la Imagen</p>}
-					{isDragReject && <p>Archivo no válido</p>}
-					{!isDragActive && <p>Arrastra y suelta una imagen aquí</p>}
-				</div>
-			</div>
+            `,
+          })}
+        >
+          <input {...getInputProps()} />
+          {isDragAccept && <p>Suelta la Imagen</p>}
+          {isDragReject && <p>Archivo no válido</p>}
+          {!isDragActive && <p>Arrastra y suelta una imagen aquí</p>}
+        </div>
+      </div>
 
-          {image && (
-                      <div className='py-5 sapce-y-3'>
-                          <p className='font-bold'>Imagen Noticia:</p>
-                          <div className='w-[900px] h-[480px] relative'>
-                            <Image 
-                              src={image}
-                              alt='Imagen Publicada'
-                              className='object-cover'
-                              fill
-                            />
-                          </div>
-                      </div>
-                    )}
+      {image && (
+        <div className='py-5 sapce-y-3'>
+          <p className='font-bold'>Imagen Noticia:</p>
+          <div className='w-[900px] h-[480px] relative'>
+            <Image 
+              src={image}
+              alt='Imagen Publicada'
+              className='object-cover'
+              fill
+            />
+          </div>
+        </div>
+      )}
 
-          {news.image && !image && (
-                      <div className='py-5 sapce-y-3'>
-                          <p className='font-bold'>Imagen Actual:</p>
-                          <div className='w-[900px] h-[480px] relative'>
-                            <Image 
-                              src={getImagePath(news.image)}
-                              alt='Imagen Publicada'
-                              className='object-cover'
-                              fill
-                            />
-                          </div>
-                      </div>
-                    )}
+      {news.image && !image && (
+        <div className='py-5 sapce-y-3'>
+          <p className='font-bold'>Imagen Actual:</p>
+          <div className='w-[900px] h-[480px] relative'>
+            <Image 
+              src={getImagePath(news.image)}
+              alt='Imagen Publicada'
+              className='object-cover'
+              fill
+            />
+          </div>
+        </div>
+      )}
 
       <input 
-          type="hidden" 
-          name='image'
-          defaultValue={image ? image : news.image}
-          />
+        type="hidden" 
+        name='image'
+        defaultValue={image ? image : news.image}
+      />
 
       <input
         type="submit"

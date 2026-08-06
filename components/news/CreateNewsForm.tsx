@@ -8,6 +8,15 @@ import { toast } from 'react-toastify'
 import { useDropzone } from 'react-dropzone'
 import { uploadImage } from '@/app/actions/upload-image-action'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
+
+// Importar TipTap dinámicamente
+const EditorTipTap = dynamic(() => import('@/components/news/EditorTipTap'), {
+	ssr: false,
+	loading: () => (
+		<textarea className='w-full p-3 border border-gray-100 bg-slate-100 h-[200px]' />
+	),
+})
 
 export default function CreateNewsForm({
 	programas,
@@ -32,6 +41,7 @@ export default function CreateNewsForm({
 	}, [state, router])
 
 	const [image, setImage] = useState('')
+	const [story, setStory] = useState('') // ← Nuevo estado para el editor
 
 	const onDrop = useCallback(async (files: File[]) => {
 		const formData = new FormData()
@@ -77,6 +87,8 @@ export default function CreateNewsForm({
 					name='headline'
 				/>
 			</div>
+
+			{/* REEMPLAZAR EL TEXTAREA POR EDITOR TIPTAP */}
 			<div className='space-y-3'>
 				<label
 					htmlFor='story'
@@ -84,11 +96,18 @@ export default function CreateNewsForm({
 				>
 					Historia
 				</label>
+				<EditorTipTap
+					name='story'
+					value={story}
+					onChange={setStory}
+				/>
+				{/* Mantener textarea oculto para validaciones */}
 				<textarea
 					id='story'
-					className='w-full p-3  border border-gray-100 bg-slate-100'
-					placeholder='Escribe la historia de la noticia'
+					className='hidden'
 					name='story'
+					value={story}
+					readOnly
 				/>
 			</div>
 			<div className='space-y-3'>
@@ -123,9 +142,14 @@ export default function CreateNewsForm({
 					{...getRootProps({
 						className: `
 								py-20 border-2 border-dashed  text-center 
-								${isDragActive ? 'border-gray-900 text-gray-900 bg-gray-200 ' : 'border-gray-400 text-gray-400 bg-white'} 
+								${
+									isDragActive
+										? 'border-gray-900 text-gray-900 bg-gray-200 '
+										: 'border-gray-400 text-gray-400 bg-white'
+								} 
             					${isDragReject ? 'border-none bg-white' : 'cursor-not-allowed'}
-        					`,})}
+        					`,
+					})}
 				>
 					<input {...getInputProps()} />
 					{isDragAccept && <p>Suelta la Imagen</p>}

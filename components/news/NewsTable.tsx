@@ -5,6 +5,26 @@ import DeleteNewsForm from "./DeleteNewsForm"
 import { getImagePath } from "@/src/utils"
 import { RiEditBoxFill } from "react-icons/ri"
 
+// Función para limpiar HTML y mostrar texto plano
+const stripHtml = (html: string) => {
+  if (!html) return ''
+  
+  // Eliminar etiquetas HTML
+  const text = html.replace(/<[^>]*>/g, '')
+  
+  // Reemplazar entidades HTML comunes
+  const decoded = text
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+  
+  // Limitar longitud y eliminar espacios extra
+  return decoded.trim().substring(0, 50) + (decoded.length > 50 ? '...' : '')
+}
+
 export default function NewsTable({news}: {news: News[]}) {
   return (
     <div className="px-4 sm:px-6 lg:px-8 mt-10">
@@ -41,13 +61,15 @@ export default function NewsTable({news}: {news: News[]}) {
                           alt={`Imagen de noticia ${report.headline}`}
                           width={50}
                           height={50}
+                          className="object-cover rounded"
                         />
                       </td>
                       <td className="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                         {report.headline}
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500">
-                        {report.story.length > 50 ? `${report.story.slice(0, 50)}...` : report.story}
+                        {/* Mostrar texto limpio sin HTML */}
+                        {stripHtml(report.story)}
                       </td>
                       <td className="px-3 py-4 text-sm text-gray-500">
                         {report.program.name}

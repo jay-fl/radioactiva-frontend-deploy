@@ -1,11 +1,12 @@
 "use client"
-import { FingerPrintIcon, UserIcon } from '@heroicons/react/20/solid'
+import { FingerPrintIcon, MicrophoneIcon, UserIcon } from '@heroicons/react/20/solid'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 
 const tabs = [
     { name: 'Mi Cuenta', href: '/admin/profile/settings', icon: UserIcon },
     { name: 'Cambiar Password', href: '/admin/profile/password', icon: FingerPrintIcon },
+    { name: 'Mi Programa', href: '/admin/profile/program', icon: MicrophoneIcon },
 ]
 
 function classNames(...classes: string[]) {
